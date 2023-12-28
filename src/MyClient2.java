@@ -46,6 +46,10 @@ public class MyClient2 {
                 dos.writeUTF(clientname + ": " + message);
                 dos.flush();
                 saveMsgToDB(clientname, message);
+                if (message.equals("Clear"))
+                {
+                    clearDB();
+                }
             } while (!message.equals("End"));
 
             // Close resources
@@ -95,6 +99,23 @@ public class MyClient2 {
             connection.close();
         } catch (SQLException e) {
             System.out.println("Error saving message to database: " + e.getMessage());
+        }
+    }
+    
+    private static void clearDB()
+    {
+        try
+        {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/messageserver", "root", "");
+            String deleteQuery = "DELETE FROM messages";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+                preparedStatement.executeUpdate();
+            }
+            System.out.println("Deleting message to database");
+            connection.close();
+        }
+        catch (SQLException e){
+            System.out.println("Error deleting message to database: " + e.getMessage());
         }
     }
 }
